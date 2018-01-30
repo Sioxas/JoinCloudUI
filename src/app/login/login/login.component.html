@@ -1,8 +1,21 @@
-<p>
-  login works!
-</p>
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-    <input type="text" formControlName="username">
-    <input type="password" formControlName="password">
-    <input type="submit">
-</form>
+<div class="login">
+    <div class="big-logo">
+        <img src="./../../../assets/logo_white_transparent.png" alt="">
+    </div>
+    <div class="login-form">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+            <h3>登录</h3>
+            <div class="form-control">
+                <input type="text" formControlName="username" placeholder="Email">
+
+            </div>
+            <div class="form-control">
+                <input type="password" formControlName="password" placeholder="Password">
+            </div>
+            <div class="form-control form-btn">
+                <input type="submit">
+            </div>
+        </form>
+    </div>
+
+</div>
