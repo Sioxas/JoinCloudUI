@@ -10,7 +10,7 @@
       true,
       "check-space"
     ],
-    "curly": true,
+    "curly": false,
     "eofline": true,
     "forin": false,
     "import-blacklist": [
@@ -85,10 +85,7 @@
       "single"
     ],
     "radix": true,
-    "semicolon": [
-      true,
-      "never"
-    ],
+    "semicolon": false,
     "triple-equals": [
       true,
       "allow-null-check"
