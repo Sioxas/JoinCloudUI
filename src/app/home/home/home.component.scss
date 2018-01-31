@@ -29,6 +29,15 @@ header{
         animation: shack 200s infinite;
         box-shadow:0 0 20px #000;
     }
+    .blank{
+        flex-grow:1;
+    }
+    .user-info{
+        color:#fff;
+        display: flex;
+        flex-direction:column;
+        justify-content: center;
+    }
     @keyframes shack
     {
         0%   {transform: translateY(0px)rotate(60deg);}

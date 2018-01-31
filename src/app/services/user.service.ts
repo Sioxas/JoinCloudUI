@@ -14,9 +14,6 @@ export class UserService {
     }
 }
 
-
-
-
 let tenantUser: any = {
     'id': {
         'entityType': 'USER',

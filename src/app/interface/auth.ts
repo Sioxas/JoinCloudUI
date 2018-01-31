@@ -1,9 +1,9 @@
-export interface LoginResponse {
+export interface TokenResponse {
     refreshToken:string,
     token:string
 }
 
-export interface AuthInfo {
+export interface TokenInfo {
     sub: string,
     scopes: string[],
     userId: string,
@@ -18,5 +18,5 @@ export interface AuthInfo {
 
 export interface Token {
     token:string,
-    exp:number
+    expiration:string
 }
