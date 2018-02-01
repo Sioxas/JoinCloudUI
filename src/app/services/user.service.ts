@@ -2,15 +2,19 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of'
 import {UserProfile} from './../interface/user'
+import 'rxjs/add/operator/catch'
+import 'rxjs/add/operator/switchMap'
 
 @Injectable()
 export class UserService {
     constructor(private auth:AuthService,private http:HttpClient) { }
     getUserProfile():Observable<UserProfile>{
-        let userProfileObservable = this.http.get<UserProfile>('/api/user/'+this.auth.userId)
-        return userProfileObservable
+        return this.auth.getUserId().switchMap(id=>{
+            return this.http.get<UserProfile>('/api/user/'+id)
+        }).catch(e=>{
+            return Observable.throw(e)
+        })
     }
 }
 

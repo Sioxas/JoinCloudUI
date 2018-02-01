@@ -7,14 +7,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HomeModule } from './home/home.module'
 import { LoginModule } from './login/login.module'
 import { AppRoutingModule } from './app-routing.module'
+import { HTTP_INTERCEPTORS } from '@angular/common/http'
+import { AuthInterceptor } from './interceptor/auth-interceptor'
 
 import { AppComponent } from './app.component'
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component'
 
 import { AuthService } from './services/auth.service'
 import { UserService } from './services/user.service'
-import { HTTP_INTERCEPTORS } from '@angular/common/http'
-import { AuthInterceptor } from './interceptor/auth-interceptor'
+import { WebsocketService } from './services/websocket.service'
 
 
 @NgModule({
@@ -29,11 +30,16 @@ import { AuthInterceptor } from './interceptor/auth-interceptor'
         LoginModule,
         AppRoutingModule
     ],
-    providers: [UserService, AuthService,{
-        provide: HTTP_INTERCEPTORS,
-        useClass: AuthInterceptor, 
-        multi: true,
-    }],
+    providers: [
+        UserService,
+        AuthService,
+        WebsocketService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

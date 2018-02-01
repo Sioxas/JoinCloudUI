@@ -8,5 +8,11 @@ export const types = {
     token:{
         HEADER_PREFIX:'Bearer ',
         JWT_TOKEN_HEADER_PARAM:'X-Authorization'
+    },
+    websocketState:{
+        CONNECTING:0,
+        OPEN:1,
+        CLOSING:2,
+        CLOSED:3
     }
 }

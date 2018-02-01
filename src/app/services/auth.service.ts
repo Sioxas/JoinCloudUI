@@ -7,6 +7,9 @@ import { TokenInfo, TokenResponse, Token } from './../interface/auth'
 import { types } from './../types'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switchMap'
+import 'rxjs/add/operator/map'
+import 'rxjs/add/observable/of'
+import 'rxjs/add/observable/throw'
 
 @Injectable()
 export class AuthService {
@@ -38,14 +41,10 @@ export class AuthService {
         localStorage.setItem(types.localStorageKey.REFRESH_TOKEN_EXPIRATION, token.expiration)
     }
 
-    get userId(): string {
-        if(tokenValid(this.accessToken)){
-            return this.authInfo.userId
-        }
-    }
+    
 
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
-        
+        // this.getAccessToken()
     }
 
     login(username: string, password: string) {
@@ -65,6 +64,10 @@ export class AuthService {
         }else{
             return this.updateToken()
         }
+    }
+
+    getUserId(): Observable<string> {
+        return this.getAccessToken().map(token=>parseToken(token).userId)
     }
 
     private resolveToken(rawToken: TokenResponse) {
@@ -97,12 +100,11 @@ export class AuthService {
             })
         else {
             this.router.navigate(['/login'])
-            throw Observable.of('登录过期')
+            return Observable.throw(new Error('登录过期'))
         }
     }
 
 }
-
 
 function tokenValid(token: Token): boolean {
     return token && token.token && token.expiration
@@ -112,16 +114,3 @@ function tokenValid(token: Token): boolean {
 function parseToken(tokenStr:string):TokenInfo{
     return JSON.parse(Base64.decode(tokenStr.split('.')[1]))
 }
-
-// let authInfo = {
-//     'sub': 'sysadmin@thingsboard.org',  // 用户
-//     'scopes': ['SYS_ADMIN'],
-//     'userId': 'f92d1cd0-0561-11e8-882b-99de6e796ca4',
-//     'enabled': true,
-//     'isPublic': false,
-//     'tenantId': '13814000-1dd2-11b2-8080-808080808080',
-//     'customerId': '13814000-1dd2-11b2-8080-808080808080',
-//     'iss': 'thingsboard.io', // 签发者
-//     'iat': 1517279125,  // 签发时间
-//     'exp': 1517280025  // 过期时间
-// }

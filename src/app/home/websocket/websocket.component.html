@@ -1,3 +1,8 @@
-<p>
-  websocket works!
-</p>
+<textarea rows="10" cols="50" [(ngModel)]="textMessage"></textarea>
+<button (click)="send()">Send</button>
+<button (click)="clean()">Clean</button>
+<ul>
+    <li *ngFor="let item of responseMessages">
+        <p>{{item}}</p>
+    </li>
+</ul>

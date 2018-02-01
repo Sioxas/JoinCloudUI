@@ -15,6 +15,8 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.user.getUserProfile().subscribe(data=>{
             this.userInfo = data
+        },error=>{
+            console.log(error)
         })
     }
 
