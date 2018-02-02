@@ -6,14 +6,14 @@ import { Observable } from 'rxjs/Observable'
 import { TokenInfo, TokenResponse, Token } from './../interface/auth'
 import { types } from './../types'
 import 'rxjs/add/operator/do'
-import 'rxjs/add/operator/switchMap'
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/share'
 import 'rxjs/add/observable/of'
 import 'rxjs/add/observable/throw'
 
 @Injectable()
 export class AuthService {
-    private get authInfo(): TokenInfo{
+    private get authInfo(): TokenInfo {
         return parseToken(this.accessToken.token)
     }
 
@@ -41,7 +41,9 @@ export class AuthService {
         localStorage.setItem(types.localStorageKey.REFRESH_TOKEN_EXPIRATION, token.expiration)
     }
 
-    
+    private isPending = false
+
+    private pendingToken: Observable<string>
 
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
         // this.getAccessToken()
@@ -51,7 +53,6 @@ export class AuthService {
         this.http.post<TokenResponse>('/api/auth/login', {
             username, password
         }).subscribe(data => {
-            console.log(data)
             this.resolveToken(data)
         }, error => {
             console.error(error)
@@ -59,46 +60,55 @@ export class AuthService {
     }
 
     getAccessToken(): Observable<string> {
-        if(tokenValid(this.accessToken)){
+        if (tokenValid(this.accessToken)) {
             return Observable.of(this.accessToken.token)
-        }else{
+        } else {
             return this.updateToken()
         }
+
     }
 
     getUserId(): Observable<string> {
-        return this.getAccessToken().map(token=>parseToken(token).userId)
+        return this.getAccessToken().map(token => {
+            return parseToken(token).userId
+        })
     }
 
     private resolveToken(rawToken: TokenResponse) {
         const accessToken = rawToken.token
         const refreshToken = rawToken.refreshToken
-        const accessTokenInfo:TokenInfo = parseToken(accessToken)
-        const refreshTokenInfo:TokenInfo = parseToken(refreshToken)
+        const accessTokenInfo: TokenInfo = parseToken(accessToken)
+        const refreshTokenInfo: TokenInfo = parseToken(refreshToken)
 
         this.accessToken = {
-            token:accessToken,
-            expiration:accessTokenInfo.exp.toString()
+            token: accessToken,
+            expiration: accessTokenInfo.exp.toString()
         }
 
         this.refreshToken = {
-            token:refreshToken,
-            expiration:refreshTokenInfo.exp.toString()
+            token: refreshToken,
+            expiration: refreshTokenInfo.exp.toString()
         }
 
         this.router.navigate(['/'])
     }
 
-    private updateToken():Observable<string> {
-        if(tokenValid(this.refreshToken))
-            return this.http.post<TokenResponse>('/api/auth/token',{
-                refreshToken:this.refreshToken.token
-            }).do(data=>{
+
+    private updateToken(): Observable<string> {
+        if (tokenValid(this.refreshToken)) {
+            if (this.isPending)
+                return this.pendingToken
+            this.isPending = true
+            this.pendingToken = this.http.post<TokenResponse>('/api/auth/token', {
+                refreshToken: this.refreshToken.token
+            }).do(data => {
+                this.isPending = false
                 this.resolveToken(data)
-            }).switchMap(data=>{
+            }).map(data => {
                 return data.token
-            })
-        else {
+            }).share()
+            return this.pendingToken
+        } else {
             this.router.navigate(['/login'])
             return Observable.throw(new Error('登录过期'))
         }
@@ -111,6 +121,6 @@ function tokenValid(token: Token): boolean {
         && parseInt(token.expiration, 10) > Math.round(new Date().getTime() / 1000)
 }
 
-function parseToken(tokenStr:string):TokenInfo{
+function parseToken(tokenStr: string): TokenInfo {
     return JSON.parse(Base64.decode(tokenStr.split('.')[1]))
 }

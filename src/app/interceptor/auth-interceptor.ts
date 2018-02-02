@@ -14,7 +14,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.auth = this.injector.get(AuthService)
-        console.log(req.url)
         if (['/api/auth/login', '/api/auth/token'].includes(req.url)) {
             return next.handle(req)
         } else {
