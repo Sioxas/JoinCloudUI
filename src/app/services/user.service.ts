@@ -18,7 +18,7 @@ export class UserService {
     }
 }
 
-let tenantUser: any = {
+const tenantUser: any = {
     'id': {
         'entityType': 'USER',
         'id': 'f1771d31-d017-11e7-b3b5-d1a5a47deb72'

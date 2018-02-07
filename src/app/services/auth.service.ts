@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { Base64 } from 'js-base64'
 import { Observable } from 'rxjs/Observable'
 import { TokenInfo, TokenResponse, Token } from './../interface/auth'
-import { types } from './../types'
+import { types } from './../common/types'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/share'
@@ -110,7 +110,7 @@ export class AuthService {
             return this.pendingToken
         } else {
             this.router.navigate(['/login'])
-            return Observable.throw(new Error('登录过期'))
+            return Observable.throw('登录过期')
         }
     }
 

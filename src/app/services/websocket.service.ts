@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { types } from './../types'
+import { types } from './../common/types'
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 

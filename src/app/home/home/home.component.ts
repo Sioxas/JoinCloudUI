@@ -9,8 +9,8 @@ import { AuthService } from '../../services/auth.service';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-    userInfo = {} as UserProfile
-    constructor(private user: UserService,private auth:AuthService) { }
+    public userInfo = {} as UserProfile
+    public constructor(private user: UserService,private auth:AuthService) { }
 
     ngOnInit() {
         this.user.getUserProfile().subscribe(data=>{
@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
         })
     }
 
-    get userInfoString():string{
+    public get userInfoString():string{
         return JSON.stringify(this.userInfo)
     }
 

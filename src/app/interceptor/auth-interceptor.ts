@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core'
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http'
 import { AuthService } from './../services/auth.service'
 import { Observable } from 'rxjs/Observable';
-import { types } from './../types'
+import { types } from './../common/types'
 import 'rxjs/add/operator/switchMap'
 
 @Injectable()
