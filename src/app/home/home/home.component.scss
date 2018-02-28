@@ -1,52 +1,86 @@
 @import './../../style/style.config.scss';
-header{
-    height:80px;
-    width:100%;
-    // background:#20377b;
+header {
+    height: 80px;
+    width: 100%; // background:#20377b;
     background-image: linear-gradient(to right, $primaryColor 0%, $secondnaryColor 100%);
     position: fixed;
-    top:0;
-    display:flex;
-    flex-direction:row;
+    top: 0;
+    display: flex;
+    flex-direction: row;
     overflow: hidden;
-    .logo{
-        height:100%;
-        width:200px;
-        margin:0 20px;
-        display:flex;
-        flex-direction:row;
+    .logo {
+        height: 100%;
+        width: 200px;
+        margin: 0 20px;
+        display: flex;
+        flex-direction: row;
         align-items: center;
-        img{
-            width:200px;
+        img {
+            width: 200px;
         }
     }
-    .clip{
-        background:#fff;
-        opacity:0.1;
-        width:300px;
-        height:300px;
+    .title{
+        color:#fff;
+        line-height:80px;
+        h2{
+            font-weight: lighter;
+        }
+    }
+    .clip {
+        background: #fff;
+        opacity: 0.1;
+        width: 300px;
+        height: 300px;
         transform: rotate(60deg);
         animation: shack 200s infinite;
-        box-shadow:0 0 20px #000;
+        box-shadow: 0 0 20px #000;
     }
-    .blank{
-        flex-grow:1;
+    .blank {
+        flex-grow: 1;
     }
-    .user-info{
-        color:#fff;
+    .user-info {
+        color: #fff;
         display: flex;
-        flex-direction:column;
+        flex-direction: column;
         justify-content: center;
     }
-    @keyframes shack
-    {
-        0%   {transform: translateY(0px)rotate(60deg);}
-        25%  {transform: translateY(-75px)rotate(60deg);}
-        50%  {transform: translateY(-150px)rotate(60deg);}
-        75%  {transform: translateY(-75px)rotate(60deg);}
-        100% {transform: translateY(0px)rotate(60deg);}
+    .logout-button {
+        width: 80px;
+        height: 80px;
+        color: #fff;
+        box-sizing: border-box;
+        padding: 5px;
+        .btn-text {
+            display: block;
+            width:70px;
+            height:70px;
+            text-align: center;
+            line-height: 70px;
+            cursor: pointer;
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+    @keyframes shack {
+        0% {
+            transform: translateY(0px)rotate(60deg);
+        }
+        25% {
+            transform: translateY(-75px)rotate(60deg);
+        }
+        50% {
+            transform: translateY(-150px)rotate(60deg);
+        }
+        75% {
+            transform: translateY(-75px)rotate(60deg);
+        }
+        100% {
+            transform: translateY(0px)rotate(60deg);
+        }
     }
 }
-.main{
-    margin-top:80px;
+
+.main {
+    margin-top: 80px;
 }

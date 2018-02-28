@@ -49,16 +49,48 @@ export class AuthService {
         // this.getAccessToken()
     }
 
+    /**
+     * 用户登录
+     * 
+     * @param {string} username 用户名
+     * @param {string} password 密码
+     * @memberof AuthService
+     */
     login(username: string, password: string) {
         this.http.post<TokenResponse>('/api/auth/login', {
             username, password
         }).subscribe(data => {
             this.resolveToken(data)
+            this.router.navigate(['/'])
         }, error => {
             console.error(error)
         })
     }
 
+    /**
+     * 用户注销
+     * 
+     * @memberof AuthService
+     */
+    logout() {
+        [
+            types.localStorageKey.ACCESS_TOKEN,
+            types.localStorageKey.ACCESS_TOKEN_EXPIRATION,
+            types.localStorageKey.REFRESH_TOKEN,
+            types.localStorageKey.REFRESH_TOKEN_EXPIRATION
+        ].forEach(item => {
+            localStorage.removeItem(item)
+        })
+        this.router.navigate(['/login'])
+    }
+
+    /**
+     * 获取 Access Token
+     * 如果当前 Access Token 有效直接返回 Access Token，否则更新并返回新的 Access Token
+     * 
+     * @returns {Observable<string>} Access Token 字符串
+     * @memberof AuthService
+     */
     getAccessToken(): Observable<string> {
         if (tokenValid(this.accessToken)) {
             return Observable.of(this.accessToken.token)
@@ -68,12 +100,26 @@ export class AuthService {
 
     }
 
+    /**
+     * 获取用户 ID
+     * 从 Token 中获取用户 ID
+     * 
+     * @returns {Observable<string>} 
+     * @memberof AuthService
+     */
     getUserId(): Observable<string> {
         return this.getAccessToken().map(token => {
             return parseToken(token).userId
         })
     }
 
+    /**
+     * 处理 Token 请求响应
+     * 
+     * @private
+     * @param {TokenResponse} rawToken 通过 Http 请求获取的 Token 对象
+     * @memberof AuthService
+     */
     private resolveToken(rawToken: TokenResponse) {
         const accessToken = rawToken.token
         const refreshToken = rawToken.refreshToken
@@ -89,11 +135,16 @@ export class AuthService {
             token: refreshToken,
             expiration: refreshTokenInfo.exp.toString()
         }
-
-        this.router.navigate(['/'])
     }
 
-
+    /**
+     * 使用 Refresh Token 更新 Access Token，
+     * 如果 Refresh Token 过期会重新登录
+     * 
+     * @private
+     * @returns {Observable<string>} Token 字符串的可观察对象
+     * @memberof AuthService
+     */
     private updateToken(): Observable<string> {
         if (tokenValid(this.refreshToken)) {
             if (this.isPending)
@@ -116,11 +167,24 @@ export class AuthService {
 
 }
 
+/**
+ * 验证 Token 是否有效
+ * 包含 Access Token 和 Refresh Token
+ * 
+ * @param {Token} token 
+ * @returns {boolean} 
+ */
 function tokenValid(token: Token): boolean {
     return token && token.token && token.expiration
         && parseInt(token.expiration, 10) > Math.round(new Date().getTime() / 1000)
 }
 
+/**
+ * 解析 Token 
+ * 
+ * @param {string} tokenStr Token 字符串
+ * @returns {TokenInfo} 
+ */
 function parseToken(tokenStr: string): TokenInfo {
     return JSON.parse(Base64.decode(tokenStr.split('.')[1]))
 }

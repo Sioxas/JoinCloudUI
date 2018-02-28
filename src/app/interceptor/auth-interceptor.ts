@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core'
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http'
 import { AuthService } from './../services/auth.service'
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable'
 import { types } from './../common/types'
 import 'rxjs/add/operator/switchMap'
 
@@ -25,8 +25,6 @@ export class AuthInterceptor implements HttpInterceptor {
                 // Pass on the cloned request instead of the original request.
                 return next.handle(authReq)
             })
-
         }
-
     }
 }

@@ -24,4 +24,8 @@ export class HomeComponent implements OnInit {
         return JSON.stringify(this.userInfo)
     }
 
+    public logout():void{
+        this.auth.logout()
+    }
+
 }
