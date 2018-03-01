@@ -3,18 +3,14 @@
         <img src="./../../../assets/logo_white_transparent.png" alt="">
     </div>
     <div class="login-form">
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-            <h3>登录</h3>
-            <div class="form-control">
-                <input type="text" formControlName="username" placeholder="Email">
-
-            </div>
-            <div class="form-control">
-                <input type="password" formControlName="password" placeholder="Password">
-            </div>
-            <div class="form-control form-btn">
-                <input type="submit" value="登录">
-            </div>
-        </form>
+        <div class="mode-switch">
+            <span (click)="switchPanelMode('fast')" [class.selected]="panelMode==='fast'">快速登录</span>
+            <span> 😋 </span>
+            <span (click)="switchPanelMode('normal')" [class.selected]="panelMode==='normal'">账号密码登录</span>
+        </div>
+        <div class="login-panel" [ngSwitch]="panelMode">
+            <app-fast-login *ngSwitchCase="'fast'"></app-fast-login>
+            <app-login-form *ngSwitchCase="'normal'"></app-login-form>
+        </div>
     </div>
 </div>

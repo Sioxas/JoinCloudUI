@@ -13,10 +13,42 @@ import 'rxjs/add/observable/throw'
 
 @Injectable()
 export class AuthService {
+    /**
+     * Token 中的信息
+     * 
+     * @readonly
+     * @private
+     * @type {TokenInfo}
+     * @memberof AuthService
+     */
     private get authInfo(): TokenInfo {
         return parseToken(this.accessToken.token)
     }
 
+    /**
+     * 本地账户
+     * 
+     * @private
+     * @type {Object}
+     * @memberof AuthService
+     */
+    private get localAccounts(): Object {
+        const accountsJsonStr = localStorage.getItem(types.localStorageKey.LOCAL_ACCOUNTS)
+        return JSON.parse(accountsJsonStr)
+    }
+
+    private set localAccounts(accounts: Object) {
+        const accountsJsonStr = JSON.stringify(accounts)
+        localStorage.setItem(types.localStorageKey.LOCAL_ACCOUNTS, accountsJsonStr)
+    }
+
+    /**
+     * Access Token
+     * 
+     * @private
+     * @type {Token}
+     * @memberof AuthService
+     */
     private get accessToken(): Token {
         return {
             token: localStorage.getItem(types.localStorageKey.ACCESS_TOKEN),
@@ -29,6 +61,13 @@ export class AuthService {
         localStorage.setItem(types.localStorageKey.ACCESS_TOKEN_EXPIRATION, token.expiration)
     }
 
+    /**
+     * Refresh Token
+     * 
+     * @private
+     * @type {Token}
+     * @memberof AuthService
+     */
     private get refreshToken(): Token {
         return {
             token: localStorage.getItem(types.localStorageKey.REFRESH_TOKEN),
@@ -45,8 +84,21 @@ export class AuthService {
 
     private pendingToken: Observable<string>
 
+    private currentUser: string
+
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
         // this.getAccessToken()
+    }
+
+    /**
+     * 切换账号
+     * 
+     * @param {string} username 用户名
+     * @memberof AuthService
+     */
+    switchAccount(username: string): void {
+        this.currentUser = username
+        this.resolveToken(this.localAccounts[username])
     }
 
     /**
@@ -56,10 +108,12 @@ export class AuthService {
      * @param {string} password 密码
      * @memberof AuthService
      */
-    login(username: string, password: string) {
+    login(username: string, password: string): void {
         this.http.post<TokenResponse>('/api/auth/login', {
             username, password
         }).subscribe(data => {
+            this.currentUser = username
+            this.saveAccount(username, data)
             this.resolveToken(data)
             this.router.navigate(['/'])
         }, error => {
@@ -72,7 +126,7 @@ export class AuthService {
      * 
      * @memberof AuthService
      */
-    logout() {
+    logout(): void {
         [
             types.localStorageKey.ACCESS_TOKEN,
             types.localStorageKey.ACCESS_TOKEN_EXPIRATION,
@@ -92,12 +146,9 @@ export class AuthService {
      * @memberof AuthService
      */
     getAccessToken(): Observable<string> {
-        if (tokenValid(this.accessToken)) {
-            return Observable.of(this.accessToken.token)
-        } else {
-            return this.updateToken()
-        }
-
+        return tokenValid(this.accessToken)
+            ? Observable.of(this.accessToken.token)
+            : this.updateToken()
     }
 
     /**
@@ -114,13 +165,23 @@ export class AuthService {
     }
 
     /**
+     * 获取本地保存的用户名
+     * 
+     * @returns {Array<string>} 用户名列表
+     * @memberof AuthService
+     */
+    getLocalAccounts(): Array<string> {
+        return this.localAccounts ? Object.keys(this.localAccounts) : []
+    }
+
+    /**
      * 处理 Token 请求响应
      * 
      * @private
      * @param {TokenResponse} rawToken 通过 Http 请求获取的 Token 对象
      * @memberof AuthService
      */
-    private resolveToken(rawToken: TokenResponse) {
+    private resolveToken(rawToken: TokenResponse): void {
         const accessToken = rawToken.token
         const refreshToken = rawToken.refreshToken
         const accessTokenInfo: TokenInfo = parseToken(accessToken)
@@ -150,21 +211,38 @@ export class AuthService {
             if (this.isPending)
                 return this.pendingToken
             this.isPending = true
-            this.pendingToken = this.http.post<TokenResponse>('/api/auth/token', {
+            
+            return this.pendingToken = this.http.post<TokenResponse>('/api/auth/token', {
                 refreshToken: this.refreshToken.token
             }).do(data => {
                 this.isPending = false
+                this.saveAccount(this.currentUser, data)
                 this.resolveToken(data)
-            }).map(data => {
-                return data.token
-            }).share()
-            return this.pendingToken
+            }).map(data => data.token).share()
         } else {
             this.router.navigate(['/login'])
             return Observable.throw('登录过期')
         }
     }
 
+    /**
+     * 保存登录信息
+     * 
+     * @private
+     * @param {string} username 用户名
+     * @param {TokenResponse} token Token
+     * @memberof AuthService
+     */
+    private saveAccount(username: string, token: TokenResponse): void {
+        let accounts = this.localAccounts
+        this.localAccounts = accounts
+            ? username in accounts
+                ? Object.keys(accounts)
+                    .filter(item => item !== username)
+                    .reduce((a, b) => ({ ...a, [b]: accounts[b] }), { [username]: token })
+                : { ...accounts, [username]: token }
+            : { [username]: token }
+    }
 }
 
 /**

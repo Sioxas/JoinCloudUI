@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { HttpClient } from '@angular/common/http'
 
-import { AuthService } from './../../services/auth.service'
+import { HttpClient } from '@angular/common/http'
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -11,23 +10,16 @@ import { AuthService } from './../../services/auth.service'
 })
 export class LoginComponent implements OnInit {
 
-    loginForm: FormGroup
-    constructor(private fb: FormBuilder, private auth: AuthService,private http:HttpClient) { }
-
+    panelMode = 'normal'
+    constructor(private auth: AuthService) { }
     ngOnInit() {
-        this.creatForm()
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
+        if(this.auth.getLocalAccounts().length){
+            this.panelMode='fast'
+        }
     }
-
-    creatForm() {
-        this.loginForm = this.fb.group({
-            username: ['', Validators.required],
-            password: ['', Validators.required]
-        })
+    switchPanelMode(mode){
+        this.panelMode = mode
     }
-
-    onSubmit(){
-        let formValue = this.loginForm.value
-        this.auth.login(formValue.username,formValue.password)
-    }
-
 }

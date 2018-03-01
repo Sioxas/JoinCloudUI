@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
@@ -6,9 +6,11 @@ import { WebsocketService } from '../../services/websocket.service';
     templateUrl: './websocket.component.html',
     styleUrls: ['./websocket.component.scss']
 })
-export class WebsocketComponent implements OnInit {
+export class WebsocketComponent implements OnInit,OnDestroy {
 
-    textMessage: string
+    textMessage = `
+    {"tsSubCmds":[{"entityType":"DEVICE","entityId":"8f4497c0-1c87-11e8-aded-5d4885335f93","keys":"temperature","cmdId":1},{"entityType":"DEVICE","entityId":"8f4497c0-1c87-11e8-aded-5d4885335f93","keys":"humidity","cmdId":2}],"historyCmds":[],"attrSubCmds":[]}
+    `
     responseMessages:string[]=[]
     constructor(private ws: WebsocketService) { }
 
@@ -27,6 +29,12 @@ export class WebsocketComponent implements OnInit {
 
     clean(){
         this.responseMessages = []
+    }
+
+    ngOnDestroy() {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+        this.ws.close()
     }
 
 }

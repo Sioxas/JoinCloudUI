@@ -1,0 +1,18 @@
+.fast-login {
+    text-align: center;
+    .account-list {
+        margin-top:10px;
+        list-style: none;
+        li{
+            margin:5px;
+            height:40px;
+            line-height:40px;
+            border-radius:3px;
+            cursor:default;
+            transition: all .3s ease;
+            &:hover{
+                background:rgb(243, 243, 243);
+            }
+        }
+    }
+}

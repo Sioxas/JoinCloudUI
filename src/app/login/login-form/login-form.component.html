@@ -1,0 +1,13 @@
+<div class="other-account">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-control">
+            <input type="text" formControlName="username" placeholder="Email">
+        </div>
+        <div class="form-control">
+            <input type="password" formControlName="password" placeholder="Password">
+        </div>
+        <div class="form-control form-btn">
+            <input type="submit" value="登录">
+        </div>
+    </form>
+</div>

@@ -1,0 +1,8 @@
+<div class="fast-login">
+    <h3>点击账号快速登录</h3>
+    <ul class="account-list">
+        <li *ngFor="let account of accountList" (click)="switchAccount(account)">
+            {{account}}
+        </li>
+    </ul>
+</div>

@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { HttpClientModule } from '@angular/common/http'
@@ -25,7 +26,9 @@ import { WebsocketService } from './services/websocket.service'
     ],
     imports: [
         BrowserModule,
+        FormsModule,
         HttpClientModule,
+        // BrowserAnimationsModule,
         HomeModule,
         LoginModule,
         AppRoutingModule

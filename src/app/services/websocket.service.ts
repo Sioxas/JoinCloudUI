@@ -46,11 +46,13 @@ export class WebsocketService {
                 socket.onerror = e => this.onError(e)
                 socket.onclose = e => this.onClose(e)
                 this.socket = socket
+            },err=>{
+                console.log(err)
             })
         }
     }
 
-    private close() {
+    close() {
         this.socket.close()
     }
 

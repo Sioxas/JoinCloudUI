@@ -1,0 +1,41 @@
+@import './../../style/style.config.scss';
+.other-account {
+    form {
+        width: 100%;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex-direction: column;
+        .form-control {
+            width: 200px;
+            height: 35px;
+            border-radius: 25px;
+            box-shadow: 0 6px 30px rgba(36, 37, 38, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            input {
+                box-sizing: border-box;
+                padding: 0 20px;
+                height: 100%;
+                width: 100%;
+                border: none;
+                background: transparent;
+                &::placeholder {
+                    color: #b9b9b9;
+                }
+            }
+            input:focus {
+                outline: none;
+            }
+        }
+        .form-btn {
+            background-image: linear-gradient(to right, $primaryColor 0%, $secondnaryColor 100%);
+            input {
+                color: #fff;
+            }
+        }
+    }
+}
