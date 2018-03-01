@@ -4,7 +4,8 @@ export const types = {
         ACCESS_TOKEN_EXPIRATION:'access_token_expiration',
         REFRESH_TOKEN:'refresh_token',
         REFRESH_TOKEN_EXPIRATION:'refresh_token_expiration',
-        LOCAL_ACCOUNTS:'local_accounts'
+        LOCAL_ACCOUNTS:'local_accounts',
+        CURRENT_USER:'current_user'
     },
     token:{
         HEADER_PREFIX:'Bearer ',

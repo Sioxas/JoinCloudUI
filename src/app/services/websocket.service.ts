@@ -3,10 +3,15 @@ import { AuthService } from './auth.service';
 import { types } from './../common/types'
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+import { ConnectableObservable } from 'rxjs/observable/ConnectableObservable';
+import 'rxjs/add/operator/publish'
 
 
 @Injectable()
 export class WebsocketService {
+
+    private count = 0
 
     private socket: WebSocket
 
@@ -19,7 +24,12 @@ export class WebsocketService {
     messageStream: Observable<any>
 
     constructor(private auth: AuthService) {
-        this.messageStream = this.wsSubject.asObservable()
+        this.messageStream = this.wsSubject.asObservable().share()
+        this.messageStream.subscribe(data=>{
+            console.log(data)
+        },error=>{
+            console.log(error)
+        })
     }
 
     open() {
@@ -40,6 +50,7 @@ export class WebsocketService {
             wsUri += '//' + location.hostname + ':' + port
             wsUri += '/api/ws/plugins/telemetry'
             this.auth.getAccessToken().subscribe(token => {
+                this.count++
                 const socket = new WebSocket(wsUri + '?token=' + token)
                 socket.onopen = e => this.onOpen(e)
                 socket.onmessage = e => this.onMessage(e)
@@ -65,11 +76,10 @@ export class WebsocketService {
     }
 
     private onError(event: Event) {
-        this.wsSubject.error(event)
+        this.wsSubject.next(event)
     }
 
     private onOpen(event: Event) {
-        console.log('Websocket connected.')
     }
 
     private onClose(event: CloseEvent) {

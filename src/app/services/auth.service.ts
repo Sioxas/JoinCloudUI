@@ -80,11 +80,17 @@ export class AuthService {
         localStorage.setItem(types.localStorageKey.REFRESH_TOKEN_EXPIRATION, token.expiration)
     }
 
+    private get currentUser():string{
+        return localStorage.getItem(types.localStorageKey.CURRENT_USER)
+    }
+
+    private set currentUser(username:string){
+        localStorage.setItem(types.localStorageKey.CURRENT_USER,username)
+    }
+
     private isPending = false
 
     private pendingToken: Observable<string>
-
-    private currentUser: string
 
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
         // this.getAccessToken()
@@ -131,7 +137,8 @@ export class AuthService {
             types.localStorageKey.ACCESS_TOKEN,
             types.localStorageKey.ACCESS_TOKEN_EXPIRATION,
             types.localStorageKey.REFRESH_TOKEN,
-            types.localStorageKey.REFRESH_TOKEN_EXPIRATION
+            types.localStorageKey.REFRESH_TOKEN_EXPIRATION,
+            types.localStorageKey.CURRENT_USER
         ].forEach(item => {
             localStorage.removeItem(item)
         })
