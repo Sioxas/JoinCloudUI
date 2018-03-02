@@ -1,17 +1,10 @@
-import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
+import { Injectable } from '@angular/core'
+import { AuthService } from './auth.service'
 import { types } from './../common/types'
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-import { ConnectableObservable } from 'rxjs/observable/ConnectableObservable';
-import 'rxjs/add/operator/publish'
-
+import { MySubject } from '../class/my-subject'
 
 @Injectable()
 export class WebsocketService {
-
-    private count = 0
 
     private socket: WebSocket
 
@@ -19,18 +12,9 @@ export class WebsocketService {
         return this.socket.readyState
     }
 
-    private wsSubject = new Subject()
+    mySuject = new MySubject()
 
-    messageStream: Observable<any>
-
-    constructor(private auth: AuthService) {
-        this.messageStream = this.wsSubject.asObservable().share()
-        this.messageStream.subscribe(data=>{
-            console.log(data)
-        },error=>{
-            console.log(error)
-        })
-    }
+    constructor(private auth: AuthService) {}
 
     open() {
         if (!(this.socket && (this.state === types.websocketState.OPEN))) {
@@ -50,7 +34,6 @@ export class WebsocketService {
             wsUri += '//' + location.hostname + ':' + port
             wsUri += '/api/ws/plugins/telemetry'
             this.auth.getAccessToken().subscribe(token => {
-                this.count++
                 const socket = new WebSocket(wsUri + '?token=' + token)
                 socket.onopen = e => this.onOpen(e)
                 socket.onmessage = e => this.onMessage(e)
@@ -64,7 +47,8 @@ export class WebsocketService {
     }
 
     close() {
-        this.socket.close()
+        if(this.socket)
+            this.socket.close()
     }
 
     send(data: any) {
@@ -72,17 +56,17 @@ export class WebsocketService {
     }
 
     private onMessage(event: MessageEvent) {
-        this.wsSubject.next(event.data)
+        this.mySuject.next(event.data)
     }
 
     private onError(event: Event) {
-        this.wsSubject.next(event)
+        this.mySuject.error(event)
     }
 
     private onOpen(event: Event) {
     }
 
     private onClose(event: CloseEvent) {
-        this.wsSubject.error(event)
+        this.mySuject.next(event)
     }
 }

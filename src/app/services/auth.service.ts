@@ -241,7 +241,7 @@ export class AuthService {
      * @memberof AuthService
      */
     private saveAccount(username: string, token: TokenResponse): void {
-        let accounts = this.localAccounts
+        const accounts = this.localAccounts
         this.localAccounts = accounts
             ? username in accounts
                 ? Object.keys(accounts)

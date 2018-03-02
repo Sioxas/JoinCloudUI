@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { MySubscription } from '../../class/my-subject';
 
 @Component({
     selector: 'app-websocket',
@@ -15,17 +16,13 @@ export class WebsocketComponent implements OnInit,OnDestroy {
     `
     responseMessages:string[]=[]
 
-    private sub:Subscription
+    private sub:MySubscription
     constructor(private ws: WebsocketService) { }
 
     ngOnInit() {
         this.ws.open()
-        this.sub=this.ws.messageStream.subscribe(data=>{
-            console.log('subscribe data response')
+        this.sub = this.ws.mySuject.subscribe(data=>{
             this.responseMessages.push(data)
-        },error=>{
-            console.log('subscribe data error')
-            this.responseMessages.push(JSON.stringify(error))
         })
     }
 
@@ -41,7 +38,7 @@ export class WebsocketComponent implements OnInit,OnDestroy {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
         this.ws.close()
-        // this.sub.unsubscribe()
+        this.sub.unsubscribe()
     }
 
 }
